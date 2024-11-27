@@ -1,0 +1,85 @@
+﻿.wrapper {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #651FFF;
+}
+
+.main {
+    background-color: #eee;
+    width: 600px; /* Tăng kích thước chiều rộng */
+    height: 80vh; /* Điều chỉnh chiều cao */
+    position: relative;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    padding: 6px 0px 0px 0px;
+}
+
+.scroll {
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    height: 70vh; /* Tăng chiều cao khung chat */
+}
+
+.img1 {
+    border-radius: 50%;
+    background-color: #66BB6A;
+}
+
+.name {
+    font-size: 10px; /* Điều chỉnh font cho phù hợp với khung to hơn */
+}
+
+.msg {
+    background-color: #fff;
+    font-size: 12px;
+    padding: 8px;
+    border-radius: 5px;
+    font-weight: 500;
+    color: #3e3c3c;
+}
+
+.between {
+    font-size: 10px;
+    font-weight: 500;
+    color: #a09e9e;
+}
+
+.navbar {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.form-control {
+    font-size: 14px;
+    font-weight: 400;
+    width: 500px; /* Tăng chiều rộng của input */
+    height: 40px; /* Tăng chiều cao của input */
+    border: none;
+}
+
+.icon1 {
+    color: #7C4DFF !important;
+    font-size: 20px !important;
+    cursor: pointer;
+}
+
+.icon2 {
+    color: #512DA8 !important;
+    font-size: 20px !important;
+    position: relative;
+    left: 8px;
+    padding: 0px;
+    cursor: pointer;
+}
+
+.icondiv {
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    padding: 4px;
+    position: relative;
+    bottom: 1px;
+}

@@ -1,0 +1,181 @@
+﻿@model ShoeStoreClothing.ViewModels.ListShopProductDetailViewModel
+@{
+    Layout = "_Layout";
+}
+<!-- ##### Breadcumb Area Start ##### -->
+<div class="breadcumb_area bg-img" style="background-image: url(img/bg-img/breadcumb.jpg);">
+    <div class="container h-100">
+        <div class="row h-100 align-items-center">
+            <div class="col-12">
+                <div class="page-title text-center">
+                    <h2>dresses</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ##### Breadcumb Area End ##### -->
+<!-- ##### Shop Grid Area Start ##### -->
+<section class="shop_grid_area section-padding-80">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-md-4 col-lg-3">
+                <div class="shop_sidebar_area">
+
+                    <!-- ##### Single Widget ##### -->
+                    <div class="widget catagory mb-50">
+                        <!-- Widget Title -->
+                        <h6 class="widget-title mb-30">Catagories</h6>
+
+                        <!--  Catagories  -->
+                        <div class="catagories-menu">
+                            <ul id="menu-content2" class="menu-content collapse show">
+                                <!-- Single Item -->
+                                <li data-toggle="collapse" data-target="#clothing">
+                                    <a href="#" style="color:black">clothing & shoes</a>
+                                    <ul class="sub-menu collapse show" id="clothing">
+                                        <li><a href="/Home/Shop">All</a></li>
+                                        @foreach(var item in (IEnumerable<ShoeStoreClothing.Models.Category>)ViewBag.Categories)
+                                        {
+                                            <li><a href="/Home/Shop?search=@Model.search&page=@Model.page&brand=@Model.brand&category=@item.CategoryName">@item.CategoryName</a></li>
+                                        }
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- ##### Single Widget ##### -->
+                    <div class="widget price mb-50">
+                        <!-- Widget Title -->
+                        <h6 class="widget-title mb-30">Filter by</h6>
+                        <!-- Widget Title 2 -->
+                        <p class="widget-title2 mb-30">Price</p>
+                        <div class="widget-desc">
+                            <div class="slider-range">
+                                <div data-min="49" data-max="360" data-unit="$" class="slider-range-price ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all" data-value-min="49" data-value-max="360" data-label-result="Range:">
+                                    <div class="ui-slider-range ui-widget-header ui-corner-all"></div>
+                                    <span class="ui-slider-handle ui-state-default ui-corner-all" tabindex="0"></span>
+                                    <span class="ui-slider-handle ui-state-default ui-corner-all" tabindex="0"></span>
+                                </div>
+                                <div class="range-price">Range: $49.00 - $360.00</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ##### Single Widget ##### -->
+                    <div class="widget brands mb-50">
+                        <!-- Widget Title 2 -->
+                        <p class="widget-title2 mb-30">Brands</p>
+                        <div class="widget-desc">
+                            <ul>
+                                @foreach (var item in (IEnumerable<ShoeStoreClothing.Models.Brand>)ViewBag.Brands)
+                                {
+                                    <li><a href="/Home/Shop?search=@Model.search&page=@Model.page&brand=@item.BrandName&category=@Model.category">@item.BrandName</a></li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-8 col-lg-9">
+                <div class="shop_grid_product_area">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="product-topbar d-flex align-items-center justify-content-between">
+                                <!-- Total Products -->
+                                <div class="total-products">
+                                    <p><span>@Model.TotalRecord</span> products found</p>
+                                </div>
+                                <!-- Sorting -->
+                                <div class="product-sorting d-flex">
+                                    <p>Sort by:</p>
+                                    <form action="#" method="get">
+                                        <select name="select" id="sortByselect">
+                                            <option value="value">Highest Rated</option>
+                                            <option value="value">Newest</option>
+                                            <option value="value">Price: $$ - $</option>
+                                            <option value="value">Price: $ - $$</option>
+                                        </select>
+                                        <input type="submit" class="d-none" value="">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        @foreach(var item in Model.productDetails){
+                            <div class="col-12 col-sm-6 col-lg-4">
+                                <div class="single-product-wrapper">
+                                    <!-- Product Image -->
+                                    <div class="product-img">
+                                        <img src="@item.Image" alt="Error">
+                                        <!-- Hover Thumb -->
+                                        <img class="hover-img" src="@item.Image" alt="Error">
+
+                                        <!-- Product Badge -->
+                                        @if (item.StockQuantity ==0)
+                                        {
+                                            <div class="product-badge offer-badge">
+                                                <span>Sold out</span>
+                                            </div>
+                                        }
+                                      
+                                        <!-- Favourite -->
+                                        @* <div class="product-favourite">
+                                            <a href="#" class="favme fa fa-heart"></a>
+                                        </div> *@
+                                    </div>
+
+                                    <!-- Product Description -->
+                                    <div class="product-description">
+                                        <span>topshop</span>
+                                        <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.ProductDetailID">
+                                            <h6>@item.Product.ProductName</h6>
+                                            <h6>@item.Size.SizeName</h6>
+                                        </a>
+                                        <p class="product-price">
+                                            @if (item.PriceSale != 0)
+                                            {
+                                                <span class="old-price">
+                                                    @item.ProductPrice.ToString("N0", new System.Globalization.CultureInfo("vi-VN"))VNĐ
+                                                </span>
+                                            }
+                                            @((item.ProductPrice-item.PriceSale).ToString("N0", new System.Globalization.CultureInfo("vi-VN")))VNĐ</p>
+
+                                        <!-- Hover Content -->
+                                        @* <div class="hover-content">
+                                            <!-- Add to Cart -->
+                                            <div class="add-to-cart-btn">
+                                                <a href="#" class="btn essence-btn">Add to Cart</a>
+                                            </div>
+                                        </div> *@
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+                <!-- Pagination -->
+                <nav aria-label="navigation">
+                    <ul class="pagination mt-50 mb-70">
+                        @if (Model.TotalPage > 0 && Model.TotalRecord!=0)
+                        {
+                            <ul class="pagination">
+                                <li class="page-item"><a class="page-link" href="#"><i class="fa fa-angle-left"></i></a></li>
+                                @for (int i = 1; i <= Model.TotalPage; i++)
+                                {
+                                    <li class="page-item "><a href="/Home/Shop?search=@Model.search&page=@i&brand=@Model.brand&category=@Model.category" class="page-link">@i</a></li>
+                                }
+                                <li class="page-item"><a class="page-link" href="#"><i class="fa fa-angle-right"></i></a></li>
+                            </ul>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ##### Shop Grid Area End ##### -->

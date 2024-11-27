@@ -1,0 +1,18 @@
+﻿@model ShoeStoreClothing.ViewModels.MaterialViewModel
+@{
+    Layout = "_LayoutAdmin";
+}
+<div class="container mt-5">
+    <h2>Create New Brand</h2>
+    <form action="/Admin/Material/Create" method="post" class="needs-validation">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            <label asp-for="MaterialName" class="control-label">MaterialName</label>
+            <input asp-for="MaterialName" class="form-control">
+            <span asp-validation-for="MaterialName" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a href="/Admin/Material/Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

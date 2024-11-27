@@ -1,0 +1,86 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_LayoutAdmin";
+}
+@* @section Search{
+	<div class="col-md-5 col-lg-3 order-3 order-md-2">
+		<div class="xp-searchbar">
+			<form asp-area="Admin">
+				<div class="input-group">
+					<input type="search" name="search" class="form-control"
+						   placeholder="Search">
+					<div class="input-group-append">
+						<button class="btn" type="submit" id="button-addon2">
+							Go
+						</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+} *@
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Thống kê</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Số lượng người dùng</div>
+                <div class="card-body">
+                    <h5 class="card-title">1,234</h5>
+                    <p class="card-text">Số lượng người dùng đăng ký trong tháng này.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Doanh thu</div>
+                <div class="card-body">
+                    <h5 class="card-title">$12,345</h5>
+                    <p class="card-text">Tổng doanh thu trong tháng này.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-header">Phản hồi</div>
+                <div class="card-body">
+                    <h5 class="card-title">567</h5>
+                    <p class="card-text">Số lượng phản hồi từ khách hàng.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-3">
+                <div class="card-header">Bảng thống kê chi tiết</div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Tên</th>
+                                <th>Email</th>
+                                <th>Ngày đăng ký</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>1</th>
+                                <td>Nguyễn Văn A</td>
+                                <td>nguyenvana@example.com</td>
+                                <td>01/01/2024</td>
+                                <td>Hoạt động</td>
+                            </tr>
+                            <!-- Thêm các dòng dữ liệu khác ở đây -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

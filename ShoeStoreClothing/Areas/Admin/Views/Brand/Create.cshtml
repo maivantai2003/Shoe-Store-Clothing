@@ -1,0 +1,18 @@
+﻿@model ShoeStoreClothing.ViewModels.BrandViewModel
+@{
+    Layout = "_LayoutAdmin";
+}
+<div class="container mt-5">
+    <h2>Create New Brand</h2>
+    <form action="/Admin/Brand/Create" method="post" class="needs-validation">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            <label asp-for="BrandName" class="control-label">BrandName</label>
+            <input asp-for="BrandName" class="form-control">
+            <span asp-validation-for="BrandName" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a href="/Admin/Brand/Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

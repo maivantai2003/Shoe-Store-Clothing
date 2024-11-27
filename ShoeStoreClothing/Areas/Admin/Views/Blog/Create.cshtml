@@ -1,0 +1,29 @@
+﻿@model ShoeStoreClothing.ViewModels.BlogViewModel
+@{
+
+    Layout = "_LayoutAdmin";
+}
+<div class="container mt-5">
+    <h2>Create New Color</h2>
+
+    <form asp-area="Admin" asp-controller="Color" asp-action="Create" method="post" class="needs-validation">
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            <label asp-for="BlogName" class="control-label">Color Code</label>
+            <input asp-for="BlogName"class="form-control" type="color" />
+            <span asp-validation-for="BlogName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="BlogName" class="control-label">Color Code</label>
+            <input asp-for="BlogName" class="form-control" type="color" />
+            <span asp-validation-for="BlogName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="BlogName" class="control-label">Color Code</label>
+            <input asp-for="BlogName" class="form-control" type="color" />
+            <span asp-validation-for="BlogName" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a asp-area="Admin" asp-controller="Blog" asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

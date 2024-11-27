@@ -1,0 +1,39 @@
+﻿<!-- ##### Single Product Details Area End ##### -->
+ <section class="product_comments_area mt-5">
+     <h3>Customer Comments</h3>
+     <div class="comments-list">
+         <div class="comment-item mt-4">
+             <div class="d-flex">
+                 <img src="" alt="UserName" class="user-image" style="width: 50px; height: 50px; border-radius: 50%;">
+                 <div class="comment-content ml-3">
+                     <h5>UserName</h5>
+                     <p>CommentText</p>
+                     <small>CommentDate.ToString("dd/MM/yyyy")</small>
+                     <div class="seller-response mt-2 p-2" style="background-color: #f8f9fa; border-radius: 5px;">
+                         <strong>Seller's Response:</strong>
+                         <p>SellerResponse</p>
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
+     <!-- Add New Comment Form -->
+     @* @if ()
+     {
+         <div class="add-comment mt-5" id="addComment">
+             <h4>Leave a Comment</h4>
+             <form method="post" asp-controller="Product" asp-action="AddComment" enctype="multipart/form-data">
+                 <input type="hidden" name="productId" value="" />
+                 <div class="form-group">
+                     <label for="commentText">Your Comment</label>
+                     <textarea class="form-control" id="commentText" name="commentText" rows="3" required></textarea>
+                 </div>
+                 <div class="form-group">
+                     <label for="userImage">Upload Image</label>
+                     <input type="file" class="form-control-file" id="userImage" name="userImage" accept="image/*">
+                 </div>
+                 <button type="submit" class="btn essence-btn">Submit Comment</button>
+             </form>
+         </div>
+     } *@
+</section>

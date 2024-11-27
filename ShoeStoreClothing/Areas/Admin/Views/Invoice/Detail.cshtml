@@ -1,0 +1,74 @@
+﻿@model ShoeStoreClothing.Models.Invoice
+@{
+    Layout = "_LayoutAdmin";
+}
+<div class="form-group">
+	<label asp-for="InvoiceID" class="control-label">InvoiceID</label>
+	<input asp-for="InvoiceID" class="form-control" readonly>
+	<span asp-validation-for="InvoiceID" class="text-danger"></span>
+</div>
+<div class="form-group">
+	<label asp-for="User.FullName" class="control-label">Customer</label>
+	<input asp-for="User.FullName" class="form-control" readonly>
+	<span asp-validation-for="User.FullName" class="text-danger"></span>
+</div>
+<div class="form-group">
+	<label asp-for="InvoiceDate" class="control-label">Date</label>
+	<input asp-for="InvoiceDate" class="form-control" readonly>
+	<span asp-validation-for="InvoiceDate" class="text-danger"></span>
+</div>
+<table class="table table-striped table-hover">
+	<thead>
+		<tr>
+			<th>ProductName</th>
+			<th>ProductPrice</th>
+			<th>Quantity</th>
+			<th>TotalPrice</th>
+			<th>Discount</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		@foreach (var item in Model.InvoiceDetails)
+		{
+			<tr>
+				<th>@item.ProductDetail.Product.ProductName</th>
+				<th>@item.ProductPrice</th>
+				<th>@item.Quantity</th>
+				<th>@item.TotalPrice</th>
+				<th>@item.Discount</th>
+			</tr>
+
+		}
+	</tbody>
+</table>
+<div class="form-group">
+	<label asp-for="TotalAmount" class="control-label">TotalAmount</label>
+	<input asp-for="TotalAmount" class="form-control" readonly>
+	<span asp-validation-for="TotalAmount" class="text-danger"></span>
+</div>
+<div class="form-group">
+	<label asp-for="TotalDiscount" class="control-label">TotalDiscount</label>
+	<input asp-for="TotalDiscount" class="form-control" readonly>
+	<span asp-validation-for="TotalDiscount" class="text-danger"></span>
+</div>
+<div class="form-group">
+	<label asp-for="PaymentMethod" class="control-label">PaymentMethod</label>
+	<input asp-for="PaymentMethod" class="form-control" readonly>
+	<span asp-validation-for="PaymentMethod" class="text-danger"></span>
+</div>
+<div class="form-group">
+	<label asp-for="FinalAmount" class="control-label">FinalAmount</label>
+	<input asp-for="FinalAmount" class="form-control" readonly>
+	<span asp-validation-for="FinalAmount" class="text-danger"></span>
+</div>
+<form asp-action="Update" asp-controller="Invoice" asp-area="Admin" method="post">
+	@if (Model.Action==0)
+	{
+		<input value="1" name="action" type="hidden">
+		<input value="@Model.InvoiceID" name="id" type="hidden">
+		<input value="@Model.CustomerID" name="customerId" type="hidden">
+		<button type="submit" class="btn btn-primary">Confirm</button>
+	}
+	<a asp-area="Admin" asp-controller="Invoice" asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

@@ -1,0 +1,75 @@
+﻿@model ShoeStoreClothing.ViewModels.EditProductDetailViewModel
+
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<div class="container mt-5">
+    <h2>Edit Product Detail</h2>
+    <form href="/Admin/ProductDetail/Update" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            <label asp-for="ProductDetailID" class="control-label">Color</label>
+            <input asp-for="ProductDetailID" class="form-control" readonly>
+            <span asp-validation-for="ProductDetailID" class="text-danger"></span>
+        </div> 
+        <div class="form-group">
+            <input type="text" value="@ViewBag.ProductName" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+            <label asp-for="ColorID" class="control-label">Color</label>
+            <select asp-for="ColorID" class="form-control" asp-items="@ViewBag.Colors"></select>
+            <span asp-validation-for="ColorID" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="SizeID" class="control-label">Size</label>
+            <select asp-for="SizeID" class="form-control" asp-items="@ViewBag.Sizes"></select>
+            <span asp-validation-for="SizeID" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="ProductPrice" class="control-label">ProductPrice</label>
+            <input asp-for="ProductPrice" class="form-control" />
+            <span asp-validation-for="ProductPrice" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="ProductSale" class="control-label">ProductSale</label>
+            <input asp-for="ProductSale" class="form-control"/>
+            <span asp-validation-for="ProductSale" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="StockQuantity" class="control-label">StockQuantity</label>
+            <input asp-for="StockQuantity" type="number" min="0" class="form-control" />
+            <span asp-validation-for="StockQuantity" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label name="urlImage" class="control-label">Current Image</label>
+            <div>
+                <img src="@ViewBag.urlImage" alt="Current Image" class="img-thumbnail" style="max-width: 200px;" />
+            </div>
+        </div>
+        @* <div class="form-group">
+            <label asp-for="Image" class="control-label">New Image</label>
+            <input asp-for="Image" type="file" class="form-control-file" onchange="previewImage(event)" />
+            <span asp-validation-for="Image" class="text-danger"></span>
+            <div>
+                <img id="newImagePreview" class="img-thumbnail" style="max-width: 200px; display: none;" />
+            </div>
+        </div> *@
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="/Admin/ProductDetail/Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function(){
+                var output = document.getElementById('newImagePreview');
+                output.src = reader.result;
+                output.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+}

@@ -1,0 +1,26 @@
+﻿@model ShoeStoreClothing.ViewModels.CommentViewModel;
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+
+}
+<img src="@ViewBag.image" alt="Error" style="width:100px" />
+<p>ProductName: @ViewBag.productName</p>
+<p>Color: <input type="color" value="@ViewBag.Color" /></p>
+<p>Size: @ViewBag.Size</p>
+<form asp-action="Add" asp-controller="Comment" method="post">
+    <input type="hidden" asp-for="ProductDetailId" value="@ViewBag.productDetailId" />
+    <input type="hidden" asp-for="UserId" value="@ViewBag.userId" />
+    <textarea asp-for="CommentText" class="form-control">
+
+    </textarea>
+    <span asp-validation-for="CommentText"></span>
+    <br>
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a class="btn btn-danger" href="/Comment/ManagerComment">Cancel</a>
+</form>
+ @* @section Scripts {
+     <script src="~/js/comment.js">
+     </script>
+ } *@

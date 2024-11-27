@@ -1,0 +1,19 @@
+﻿@model ShoeStoreClothing.ViewModels.SizeViewModel
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<div class="container mt-5">
+    <h2>Create New Size</h2>
+
+    <form asp-area="Admin" asp-controller="Size" asp-action="Create" method="post" class="needs-validation">
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            <label asp-for="SizeName" class="control-label">Size Name</label>
+            <input asp-for="SizeName" class="form-control" type="text" />
+            <span asp-validation-for="SizeName" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a asp-area="Admin" asp-controller="Size" asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

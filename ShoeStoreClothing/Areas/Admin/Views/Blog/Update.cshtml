@@ -1,0 +1,42 @@
+﻿@model ShoeStoreClothing.ViewModels.EditBlogViewModel
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<div class="container mt-5">
+    <h2>Update Blog</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <form asp-area="Admin" asp-controller="Blog" asp-action="Update" method="post" class="needs-validation">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            <label asp-for="BlogId" class="control-label">BlogID</label>
+            <input asp-for="BlogId" class="form-control">
+            <span asp-validation-for="BlogId" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="BlogName" class="control-label">BlogName</label>
+            <input asp-for="BlogName" class="form-control">
+            <span asp-validation-for="BlogName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Title" class="control-label">Title</label>
+            <input asp-for="Title" class="form-control">
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Subject" class="control-label">Subject</label>
+            <input asp-for="Subject" class="form-control">
+            <span asp-validation-for="Subject" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a asp-area="Admin" asp-controller="Blog" asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

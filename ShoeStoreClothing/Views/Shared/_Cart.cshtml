@@ -1,0 +1,12 @@
+﻿<div class="cart-bg-overlay"></div>
+<div class="right-side-cart-area">
+    <!-- Cart Button -->
+    <div class="cart-button">
+        <a href="#" id="rightSideCart"><img src="~/img/core-img/bag.svg" alt="">@await Component.InvokeAsync("NumberCart")</a>
+    </div>
+
+    <div class="cart-content d-flex">
+        @await Component.InvokeAsync("ShoppingCart")
+    </div>
+</div>
+<!-- ##### Right Side Cart End ##### -->

@@ -1,0 +1,90 @@
+﻿@model ShoeStoreClothing.ViewModels.PurchaseOrderViewModel
+
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<h2>Create Purchase Order</h2>
+
+<form href="/Admin/PurchaseOrder/Create" method="post">
+    <div class="form-group">
+        <label asp-for="SupplierID" class="control-label">Supplier</label>
+        <select asp-for="SupplierID" class="form-control" asp-items="@ViewBag.Suppliers"></select>
+        <span asp-validation-for="SupplierID" class="text-danger"></span>
+    </div>
+    <table class="table" id="purchaseOrder">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+                @* <th>Action</th> *@
+            </tr>
+        </thead>
+        <tbody id="product-details-body">
+        </tbody>
+    </table>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="TotalAmount" class="control-label">Total Amount</label>
+                <input asp-for="TotalAmount" class="form-control" readonly />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="TotalQuantity" class="control-label">Total Quantity</label>
+                <input asp-for="TotalQuantity" class="form-control" readonly />
+            </div>
+        </div>
+    </div>
+    <div class="form-group mt-3">
+        <button type="submit" class="btn btn-primary">Create</button>
+        <button href="/Admin/PurchaseOrder/Index" class="btn btn-danger">Cancel</button>
+    </div>
+</form>
+<button class="btn btn-danger" data-toggle="modal" href="#listProduct">List Product</button>
+<table class="table" id="tableProductDetails">
+    <thead>
+        <tr>
+            <th></th>
+            <th>ProductDetailID</th>
+            <th>ProductName</th>
+            <th>Color</th>
+            <th>Size</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in (IEnumerable<ShoeStoreClothing.Models.ProductDetail>)ViewBag.ProductDetails)
+        {
+            <tr>
+                <td>@item.ProductDetailID</td>
+                <td>@item.Product.ProductName</td>
+                <td>
+                    <input type="color" value="@item.Color.ColorName" disabled />
+                </td>
+                <td>@item.Size.SizeName</td>
+            </tr>
+        }
+    </tbody>
+</table>
+@section Scripts {
+    <script>
+        $("#tableProductDetails tbody").on("click","tr",function(){
+            var id = $(this).find("td:eq(0)").text();
+            var product = $(this).find("td:eq(1)").text();
+            var color = $(this).find("td:eq(2)").val();
+            var size = $(this).find("td:eq(3)").text();
+            var newRow = `
+                    <td>${id}</td>
+                        <td>${product}</td>
+                        <td>
+                            <input type="number" disabled />
+                        </td>
+                                <td><input type="number" disabled /></td>`
+            $("#purchaseOrder tbody").append(newRow);
+        })
+    </script>
+}

@@ -1,0 +1,87 @@
+﻿html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.notification-dropdown {
+    display: none; /* Ẩn mặc định */
+    position: absolute;
+    top: 100%; /* Đặt dưới biểu tượng */
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    max-height: 300px; /* Chiều cao tối đa của khung thông báo */
+    overflow-y: auto; /* Thêm thanh cuộn nếu nội dung vượt quá chiều cao tối đa */
+    width: 300px; /* Chiều rộng của khung thông báo */
+    z-index: 1000; /* Đảm bảo nó nằm trên nội dung khác */
+}
+
+.notification-item {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.notification-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #333ded;
+    margin: 5px 0;
+}
+
+.notification-content {
+    font-size: 14px;
+    margin: 0;
+    color:black
+}
+
+.notification-area:hover .notification-dropdown,
+.notification-dropdown.active {
+    display: block; /* Hiển thị khung thông báo khi cần */
+}
+
+
+
+
+.user-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.comment-item {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.seller-response {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+}

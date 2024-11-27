@@ -1,0 +1,25 @@
+﻿@model ShoeStoreClothing.ViewModels.EditColorViewModel
+
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<div class="container mt-5">
+    <h2>Edit Color</h2>
+    <form asp-area="Admin" asp-controller="Color" asp-action="Update" method="post" class="needs-validation">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            <label asp-for="ColorID" class="control-label">Color Name</label>
+            <input asp-for="ColorID" class="form-control" readonly>
+            <span asp-validation-for="ColorID" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="ColorName" class="control-label">Color Code</label>
+            <input asp-for="ColorName" class="form-control" type="color">
+            <span asp-validation-for="ColorName" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a asp-area="Admin" asp-controller="Color" asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

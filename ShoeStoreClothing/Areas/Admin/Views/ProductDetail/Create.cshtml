@@ -1,0 +1,54 @@
+﻿@model ShoeStoreClothing.ViewModels.ProductDetailViewModel
+
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<h2>Add Product Detail</h2>
+
+<form href="/Admin/ProductDetail/Create" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label asp-for="ProductID" class="control-label">Product ID</label>
+        <select asp-for="ProductID" class="form-control" asp-items="@(new SelectList(ViewBag.Products,"ProductID","ProductName"))" type="color"></select>
+        <span asp-validation-for="ProductID" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label class="control-label">Color</label>
+        <div>
+            @foreach (var color in (IEnumerable<ShoeStoreClothing.Models.Color>)ViewBag.Colors)
+            {
+                <div class="form-check form-check-inline">
+                    <input type="checkbox" class="form-check-input" id="color_@color.ColorID" name="ColorIDs" value="@color.ColorID" />
+                   @*  <label class="form-check-label" for="color_@color.ColorID">@color.ColorName</label> *@
+                    <input type="color"value="@color.ColorName" readonly />
+                </div>
+            }
+        </div>
+        <span asp-validation-for="ColorID" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label class="control-label">Size</label>
+        <div>
+            @foreach (var size in (IEnumerable<ShoeStoreClothing.Models.Size>)ViewBag.Sizes)
+            {
+                <div class="form-check form-check-inline">
+                    <input type="checkbox" class="form-check-input" id="size_@size.SizeID" name="SizeIDs" value="@size.SizeID" />
+                    <label class="form-check-label" for="size_@size.SizeID">@size.SizeName</label>
+                </div>
+            }
+        </div>
+        <span asp-validation-for="SizeID" class="text-danger"></span>
+    </div>
+
+    <span asp-validation-for="SizeID" class="text-danger"></span>
+    <div class="form-group">
+        <label asp-for="Image" class="control-label">Image</label>
+        <input asp-for="Image" type="file" class="form-control" />
+        <span asp-validation-for="Image" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Product Detail</button>
+    <a href="/Admin/ProductDetail/Index" class="btn btn-secondary">Cancel</a>
+</form>
+

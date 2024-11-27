@@ -1,0 +1,28 @@
+﻿@model ShoeStoreClothing.ViewModels.DiscountViewModel
+@{
+    Layout = "_LayoutAdmin";
+}
+<div class="container mt-5">
+    <h2>Create New Discount</h2>
+
+    <form asp-area="Admin" asp-controller="Discount" asp-action="Add" method="post" class="needs-validation">
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            <label asp-for="DiscountName" class="control-label">DiscountName</label>
+            <input asp-for="DiscountName" class="form-control"/>
+            <span asp-validation-for="DiscountName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="DiscountDate" class="control-label">DiscountDate</label>
+            <input asp-for="DiscountDate" class="form-control" type="date" />
+            <span asp-validation-for="DiscountDate" class="text-danger"></span>
+        </div>
+         @*  <div class="form-group">
+              <label asp-for="BlogName" class="control-label">Color Code</label>
+              <input asp-for="BlogName" class="form-control" type="color" />
+              <span asp-validation-for="BlogName" class="text-danger"></span>
+          </div> *@
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a asp-area="Admin" asp-controller="Discount" asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
