@@ -14,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+ConfigurationManager configuration=builder.Configuration;
 builder.Services.AddSignalR();  
 builder.Services.AddDbContext<ApplicationDbContext>(option =>option.UseSqlServer(builder.Configuration.GetConnectionString("Default") ?? throw new Exception("Error")));
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection(nameof(CloudinarySettings)));
@@ -29,6 +30,7 @@ builder.Services.AddScoped<IProductDetailRepository, ProductDetailRepository>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<IBlogRepository, BlogRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<RedisService>();
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
