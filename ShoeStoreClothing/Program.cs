@@ -31,6 +31,10 @@ builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<IBlogRepository, BlogRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<RedisService>();
+builder.Services.AddStackExchangeRedisCache(option =>
+{
+    option.Configuration = configuration["RedisCacheUrl"];
+});
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";

@@ -28,6 +28,12 @@
             &copy; 2024 - ShoeStoreClothing - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer> *@
+    @* @await Html.PartialAsync("_ChatBox") *@
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+    <df-messenger intent="WELCOME"
+                  chat-title="Shoe-Shop-Shoe"
+                  agent-id="a3a1fb4d-1049-49a4-8eb5-9087d2558a09"
+                  language-code="en"></df-messenger>
     @await Html.PartialAsync("_Footer")
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -49,6 +55,7 @@
     <script src="~/js/chat.js" asp-append-version="true"></script>
     <script src="~/js/notification.js" asp-append-version="true"></script>
     <script src="~/js/discount.js" asp-append-version="true"></script>
+    <script src="~/js/chatbox.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
