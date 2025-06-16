@@ -1,4 +1,4 @@
-﻿<div class="wrapper">
+﻿@* <div class="wrapper">
 	<div class="main">
 		<div class="px-2 scroll" id="renderMessager">
 		</div>
@@ -7,7 +7,7 @@
 			<input type="text number" name="text" class="form-control" placeholder="Type a message..." id="txtMessage">
 
 			<div class="icondiv d-flex justify-content-end align-content-center text-center ml-2">
-				@* <i class="fa fa-smile icon3" id="emojiPicker"></i> *@
+				<i class="fa fa-smile icon3" id="emojiPicker"></i>
 				<i class="fa fa-paperclip icon1" id="emojiPicker"></i>
 				<i class="fa fa-arrow-circle-right icon2" id="btnSend"></i>
 			</div>
@@ -17,4 +17,56 @@
 
 	</div>
 
+</div> *@
+<style>
+    #renderMessager {
+        max-height: calc(100vh - 150px);
+        overflow-y: auto;
+    }
+
+    #btnSend:hover {
+        color: #007bff;
+        cursor: pointer;
+    }
+
+    #btnAttach:hover {
+        color: #6c757d;
+        cursor: pointer;
+    }
+
+    .icondiv i {
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+
+        .icondiv i:hover {
+            transform: scale(1.2);
+        }
+</style>
+
+
+<div class="wrapper bg-light" style="height: 100vh; display: flex; flex-direction: column;">
+    <div class="main flex-grow-1 d-flex flex-column">
+
+        <!-- Tin nhắn -->
+        <div id="renderMessager" class="px-3 py-2 overflow-auto flex-grow-1" style="background-color: #f8f9fa; border-bottom: 1px solid #ddd;">
+            <!-- Tin nhắn sẽ được render tại đây -->
+        </div>
+
+        <!-- Thanh nhập và gửi tin nhắn -->
+        <nav class="navbar bg-white p-3 border-top">
+            <div class="container-fluid d-flex gap-2">
+
+                <!-- Input -->
+                <input type="text" class="form-control rounded-pill shadow-sm" placeholder="Nhập tin nhắn..." id="txtMessage" style="flex: 1;">
+
+                <!-- Icon Gửi và Đính kèm -->
+                <div class="d-flex align-items-center gap-3 ms-2">
+                    <i class="fa fa-paperclip text-secondary fs-5" id="btnAttach" role="button" title="Đính kèm"></i>
+                    <i class="fa fa-arrow-circle-right text-primary fs-4" id="btnSend" role="button" title="Gửi"></i>
+                </div>
+            </div>
+        </nav>
+
+    </div>
 </div>

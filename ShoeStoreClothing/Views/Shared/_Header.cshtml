@@ -41,7 +41,7 @@
                         }
                         @if (signInManager.IsSignedIn(User))
                         {
-                            <li><a asp-action="ManagerComment" asp-controller="Comment" id="loadAllMessageUser">Comment</a></li>
+                            <li><a asp-action="ManagerComment" asp-controller="Comment" id="loadAllMessageUser">Review</a></li>
                         }
                     </ul>
                 </div>
@@ -60,7 +60,7 @@
             </div>
             <!-- Favourite Area -->
             <div class="favourite-area">
-                <a href="/Order"><img src="~/img/core-img/heart.svg" alt=""></a>
+                <a href="/Order"><img src="~/img/core-img/order-history.png" alt=""></a>
             </div>
             <!-- User Login Info -->
             <div class="user-login-info">

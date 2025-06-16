@@ -12,6 +12,11 @@ using ShoeStoreClothing.Models;
 using ShoeStoreClothing.ViewModels;
 using System.Net;
 using MailKit.Net.Smtp;
+using System.Text;
+using System.Text.Json.Nodes;
+using CloudinaryDotNet;
+using Azure.Core;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 namespace ShoeStoreClothing.Controllers
 {
     public class CartController : Controller
@@ -19,11 +24,19 @@ namespace ShoeStoreClothing.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly IHubContext<myHub> _hubContext;
-        public CartController(ApplicationDbContext context,UserManager<AppUser> userManager, IHubContext<myHub> hubContext)
+        private readonly IConfiguration _configuration;
+        private readonly PaypalAccount paypalAccount;
+        public CartController(ApplicationDbContext context,UserManager<AppUser> userManager, IHubContext<myHub> hubContext,IConfiguration configuration)
         {
             _context = context;
             _userManager = userManager;
             _hubContext = hubContext;
+            _configuration = configuration;
+            paypalAccount=new PaypalAccount() {
+                PaypalClientId = _configuration["PayPalSettings:ClientId"],
+                PaypalSecret = _configuration["PayPalSettings:Secret"],
+                PaypalUrl = _configuration["PayPalSettings:Url"]
+            };
         }
         public IActionResult Index()
         {
@@ -89,6 +102,7 @@ namespace ShoeStoreClothing.Controllers
             ViewBag.Phone = customer.PhoneNumber;
             ViewBag.Email = customer.Email;
             ViewBag.CustomerID=customerID;  
+            ViewBag.PaypalClientId=paypalAccount.PaypalClientId;
             var list = _context.ShoppingCarts.Where(x => x.CustomerID == customerID).Include(x=>x.ProductDetail).Include(x=>x.ProductDetail.Size).Include(x=>x.ProductDetail.Product);
             var shoppingCart = new ListShoppingCartViewModel()
             {
@@ -101,9 +115,20 @@ namespace ShoeStoreClothing.Controllers
         [HttpPost]
         public async Task<IActionResult> Checkout(string[] cart, string[] quantity,string customerID,string Email,string FullName)
         {
+            return Json(new { cart, quantity, customerID, Email, FullName });
+            var success = await ProcessOrderAsync(cart, quantity, customerID, Email, FullName);
+            if (success) { 
+                return RedirectToAction("Shop", "Home");
+            }
+            else {
+                return View("/500");
+            }
+        }
+        private async Task<bool> ProcessOrderAsync(string[] cart, string[] quantity, string customerID, string Email, string FullName)
+        {
             try
             {
-                _context.Database.BeginTransactionAsync();
+                await _context.Database.BeginTransactionAsync();
                 var Invoice = new Invoice()
                 {
                     CustomerID = customerID,
@@ -144,22 +169,146 @@ namespace ShoeStoreClothing.Controllers
                 await _context.SaveChangesAsync();
                 await _context.Database.CommitTransactionAsync();
                 await _hubContext.Clients.Group("Admin").SendAsync("LoadInvoice");
-                //try
-                //{
-                //    //string name,string ToGmail,string Subject,string Body
-                //    string Body = "<h1>AAAAAA</h1>";
-                //    SendGmail.Send("Văn Tài","vantai08122003@gmail.com","Đơn Hàng Đã Đặt",Body);
-                //}
-                //catch (Exception ex) {
-                //    return Json(ex.Message);  
-                //}
-                
+                return true;
             }
             catch (Exception ex)
             {
                 await _context.Database.RollbackTransactionAsync();
+                return false;
             }
-            return RedirectToAction("Shop","Home");
+        }
+        [HttpPost]
+        public async Task<IActionResult> PayWithPaypal(string[] cart, string[] quantity, string customerID, string Email, string FullName,string totalDiscount,string totalAmount)
+        {
+            ViewBag.PaypalClientId = paypalAccount.PaypalClientId;
+            decimal total=decimal.Parse(totalAmount)-decimal.Parse(totalDiscount);
+
+            decimal usdAmount = (total / formatMoney.USD);
+            ViewBag.UsdAmount = usdAmount.ToString("F2");
+            //return Json(new { cart, quantity, customerID, Email, FullName,totalDiscount,totalAmount,total, price=usdAmount.ToString("F2")});
+            return View();
+        }
+        [HttpPost]
+        public async Task<JsonResult> CheckoutPaypal([FromBody] JsonObject? data)
+        {
+            var totalAmount = data?["amount"]?.ToString();
+            if (totalAmount == null) {
+                return new JsonResult(new { Id = "" });
+            }
+
+            JsonObject createOrderRequest = new JsonObject();
+            createOrderRequest.Add("intent", "CAPTURE");
+
+            JsonObject amount = new JsonObject();
+            amount.Add("currency_code", "USD");
+            amount.Add("value", totalAmount);
+
+            JsonObject purchaseUnit1 = new JsonObject();
+            purchaseUnit1.Add("amount", amount);
+            
+            JsonArray purchaseUnits = new JsonArray();
+            purchaseUnits.Add(purchaseUnit1);
+
+            createOrderRequest.Add("purchase_units", purchaseUnits);
+            string accessToken=await GetPaypalAccessToken();
+            string url = paypalAccount.PaypalUrl + "/v2/checkout/orders";
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
+
+                var requestMessage = new HttpRequestMessage(System.Net.Http.HttpMethod.Post, url);
+                requestMessage.Content = new StringContent(createOrderRequest.ToString(), null, "application/json");
+
+                var httpResponse = await client.SendAsync(requestMessage);
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+                    var strResponse = await httpResponse.Content.ReadAsStringAsync();
+                    var jsonResponse = JsonNode.Parse(strResponse);
+
+                    if (jsonResponse != null)
+                    {
+                        string paypalOrderId = jsonResponse["id"]?.ToString() ?? "";
+                        return new JsonResult(new { Id = paypalOrderId });
+                    }
+                }
+
+            }
+
+            return new JsonResult(new { Id = "" });
+        }
+        [HttpPost]
+        public async Task<JsonResult> CompletePaypal([FromBody] JsonObject data)
+        {
+            var orderId = data?["orderID"]?.ToString();
+            if (orderId == null)
+            {
+                return new JsonResult("error");
+            }
+
+            // Lấy access token từ PayPal
+            string accessToken = await GetPaypalAccessToken();
+            string url=paypalAccount.PaypalUrl+"/v2/checkout/orders/"+orderId+"/capture";
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
+
+                var requestMessage = new HttpRequestMessage(System.Net.Http.HttpMethod.Post, url);
+                requestMessage.Content = new StringContent("", null, "application/json");
+
+                var httpResponse = await client.SendAsync(requestMessage);
+                if (httpResponse.IsSuccessStatusCode)
+                {
+                    var strResponse = await httpResponse.Content.ReadAsStringAsync();
+                    var jsonResponse = JsonNode.Parse(strResponse);
+
+                    if (jsonResponse != null)
+                    {
+                        string paypalOrderStatus = jsonResponse["status"]?.ToString() ?? "";
+                        if (paypalOrderStatus == "COMPLETED")
+                        {
+                            // TODO: Lưu đơn hàng vào cơ sở dữ liệu ở đây
+                            // Ví dụ:
+                            // var order = new Order { ... };
+                            // _dbContext.Orders.Add(order);
+                            // await _dbContext.SaveChangesAsync();
+
+                            return new JsonResult("success");
+                        }
+                    }
+                }
+            }
+
+            return new JsonResult("error");
+        }
+
+        private async Task<string> GetPaypalAccessToken()
+        {
+            string accessToken = "";
+            string url=paypalAccount.PaypalUrl+"/v1/oauth2/token";
+            using (var client = new HttpClient())
+            {
+                string credentials64 =
+                Convert.ToBase64String(Encoding.UTF8.GetBytes(paypalAccount.PaypalClientId + ":" + paypalAccount.PaypalSecret));
+
+                client.DefaultRequestHeaders.Add("Authorization", "Basic " + credentials64);
+
+                var requestMessage = new HttpRequestMessage(System.Net.Http.HttpMethod.Post, url);
+                requestMessage.Content = new StringContent("grant_type=client_credentials", null, "application/x-www-form-urlencoded");
+                var httpResponse=await client.SendAsync(requestMessage);
+                if (httpResponse.IsSuccessStatusCode)
+                {
+                    var strResponse = await httpResponse.Content.ReadAsStringAsync();
+
+                    var jsonResponse = JsonNode.Parse(strResponse);
+                    if (jsonResponse != null)
+                    {
+                        accessToken = jsonResponse["access_token"]?.ToString() ?? "";
+                    }
+                }
+
+            }
+            return accessToken; 
         }
     }
 }
