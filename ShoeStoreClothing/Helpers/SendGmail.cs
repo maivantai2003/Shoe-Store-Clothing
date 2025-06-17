@@ -6,26 +6,19 @@ namespace ShoeStoreClothing.Helpers
 {
     public class SendGmail
     {
-        public static void Send(string name,string ToGmail,string Subject,string Body)
+        public static async Task SendAsync(string name, string toEmail, string subject, string body)
         {
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("vantaii12082003@gmail.com", "vantaii12082003@gmail.com"));
-            message.To.Add(new MailboxAddress(name, ToGmail));
-            message.Subject = Subject;
+            message.From.Add(new MailboxAddress("Shoe Store", "vantaii12082003@gmail.com"));
+            message.To.Add(new MailboxAddress(name, toEmail));
+            message.Subject = subject;
+            message.Body = new TextPart("html") { Text = body };
 
-            // Thiết lập nội dung email
-            message.Body = new TextPart("html")
-            {
-                Text = Body
-            };
-
-            using (var client = new SmtpClient())
-            {
-                client.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                client.Authenticate("vantaii12082003@gmail.com", "lgws vrot kuem nzzi");
-                client.Send(message);
-                client.Disconnect(true);
-            }
+            using var client = new SmtpClient();
+            await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync("vantaii12082003@gmail.com", "lgws vrot kuem nzzi");
+            await client.SendAsync(message);
+            await client.DisconnectAsync(true);
         }
     }
 }

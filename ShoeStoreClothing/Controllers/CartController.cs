@@ -113,10 +113,10 @@ namespace ShoeStoreClothing.Controllers
             return View(shoppingCart);
         }
         [HttpPost]
-        public async Task<IActionResult> Checkout(string[] cart, string[] quantity,string customerID,string Email,string FullName)
+        public async Task<IActionResult> Checkout(string[] cart, string[] quantity,string customerID,string Email,string FullName, string PaymentMethod)
         {
             return Json(new { cart, quantity, customerID, Email, FullName });
-            var success = await ProcessOrderAsync(cart, quantity, customerID, Email, FullName);
+            var success = await ProcessOrderAsync(cart, quantity, customerID, Email, FullName,"COD");
             if (success) { 
                 return RedirectToAction("Shop", "Home");
             }
@@ -124,7 +124,7 @@ namespace ShoeStoreClothing.Controllers
                 return View("/500");
             }
         }
-        private async Task<bool> ProcessOrderAsync(string[] cart, string[] quantity, string customerID, string Email, string FullName)
+        private async Task<bool> ProcessOrderAsync(string[] cart, string[] quantity, string customerID, string Email, string FullName,string PaymentMethod)
         {
             try
             {
@@ -132,11 +132,18 @@ namespace ShoeStoreClothing.Controllers
                 var Invoice = new Invoice()
                 {
                     CustomerID = customerID,
+                    PaymentMethod = PaymentMethod
                 };
                 await _context.AddAsync(Invoice);
                 await _context.SaveChangesAsync();
                 double TotalAmount = 0d;
                 double TotalDiscount = 0d;
+                var emailContentBuilder = new StringBuilder();
+                emailContentBuilder.AppendLine($"<p>Xin chào <b>{FullName}</b>,</p>");
+                emailContentBuilder.AppendLine("<p>Đơn hàng của bạn đã được xử lý thành công!</p>");
+                emailContentBuilder.AppendLine($"<p><b>Mã hóa đơn:</b> Invoice-{Invoice.InvoiceID}</p>");
+                emailContentBuilder.AppendLine("<table border='1' cellspacing='0' cellpadding='5'>");
+                emailContentBuilder.AppendLine("<tr><th>Hình ảnh</th><th>Tên sản phẩm</th><th>Số lượng</th></tr>");
                 for (int i = 0; i < cart.Length; i++)
                 {
                     int id = int.Parse(cart[i]);
@@ -162,13 +169,35 @@ namespace ShoeStoreClothing.Controllers
                     await _context.SaveChangesAsync();
                     _context.Remove(cartItem);
                     await _context.SaveChangesAsync();
+                    string imageUrl = productDetail?.Image ?? "https://via.placeholder.com/80"; // fallback
+                    string productName = productDetail?.Product?.ProductName ?? "Sản phẩm";
+
+                    emailContentBuilder.AppendLine("<tr>");
+                    emailContentBuilder.AppendLine($"<td><img src='{imageUrl}' alt='product' width='80'/></td>");
+                    emailContentBuilder.AppendLine($"<td>{productName}</td>");
+                    emailContentBuilder.AppendLine($"<td>{quantity[i]}</td>");
+                    emailContentBuilder.AppendLine("</tr>");
                 }
+                emailContentBuilder.AppendLine("</table>");
+                emailContentBuilder.AppendLine("<p><b>Tổng tiền:</b> " + TotalAmount.ToString("N0") + " VND</p>");
+                emailContentBuilder.AppendLine("<p><b>Giảm giá:</b> " + TotalDiscount.ToString("N0") + " VND</p>");
+                emailContentBuilder.AppendLine("<p><b>Thành tiền:</b> " + (TotalAmount - TotalDiscount).ToString("N0") + " VND</p>");
+                //emailContentBuilder.AppendLine("<p>Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi.</p>");
                 Invoice.TotalDiscount = TotalDiscount;
                 Invoice.TotalAmount = TotalAmount;
                 Invoice.FinalAmount = TotalAmount - TotalDiscount;
                 await _context.SaveChangesAsync();
                 await _context.Database.CommitTransactionAsync();
                 await _hubContext.Clients.Group("Admin").SendAsync("LoadInvoice");
+                if (Email != null)
+                {
+                    Task.Run(() => SendGmail.SendAsync(
+                        FullName,
+                        "vantai08122003@gmail.com",
+                        "Đặt hàng thành công tại ShoeStore",
+                        emailContentBuilder.ToString()
+                    ));
+                }
                 return true;
             }
             catch (Exception ex)
@@ -182,10 +211,9 @@ namespace ShoeStoreClothing.Controllers
         {
             ViewBag.PaypalClientId = paypalAccount.PaypalClientId;
             decimal total=decimal.Parse(totalAmount)-decimal.Parse(totalDiscount);
-
             decimal usdAmount = (total / formatMoney.USD);
             ViewBag.UsdAmount = usdAmount.ToString("F2");
-            //return Json(new { cart, quantity, customerID, Email, FullName,totalDiscount,totalAmount,total, price=usdAmount.ToString("F2")});
+            SessionCheckout(cart,quantity,customerID,Email,FullName,totalDiscount,totalAmount,"CREATE");
             return View();
         }
         [HttpPost]
@@ -246,7 +274,6 @@ namespace ShoeStoreClothing.Controllers
                 return new JsonResult("error");
             }
 
-            // Lấy access token từ PayPal
             string accessToken = await GetPaypalAccessToken();
             string url=paypalAccount.PaypalUrl+"/v2/checkout/orders/"+orderId+"/capture";
             using (var client = new HttpClient())
@@ -267,13 +294,23 @@ namespace ShoeStoreClothing.Controllers
                         string paypalOrderStatus = jsonResponse["status"]?.ToString() ?? "";
                         if (paypalOrderStatus == "COMPLETED")
                         {
-                            // TODO: Lưu đơn hàng vào cơ sở dữ liệu ở đây
-                            // Ví dụ:
-                            // var order = new Order { ... };
-                            // _dbContext.Orders.Add(order);
-                            // await _dbContext.SaveChangesAsync();
-
-                            return new JsonResult("success");
+                            var cart = HttpContext.Session.GetString("cart")?.Split(",") ?? Array.Empty<string>();
+                            var quantity = HttpContext.Session.GetString("quantity")?.Split(",") ?? Array.Empty<string>();
+                            var customerID = HttpContext.Session.GetString("customerID");
+                            var Email = HttpContext.Session.GetString("Email");
+                            var FullName = HttpContext.Session.GetString("FullName");
+                            var totalDiscount = HttpContext.Session.GetString("totalDiscount");
+                            var totalAmount = HttpContext.Session.GetString("totalAmount");
+                            var result = await ProcessOrderAsync(cart, quantity, customerID, Email, FullName, "PAYPAL");
+                            SessionCheckout(cart,quantity,customerID,Email,FullName,"0","0","DELETE");
+                            //return Json(new { cart, quantity, customerID, Email, FullName, totalDiscount, totalAmount});
+                            if (result)
+                            {
+                                return new JsonResult("success");
+                            }
+                            else {
+                                return new JsonResult("error");
+                            }
                         }
                     }
                 }
@@ -309,6 +346,30 @@ namespace ShoeStoreClothing.Controllers
 
             }
             return accessToken; 
+        }
+        private void SessionCheckout(string[] ?cart, string[] ?quantity, string ?customerID, string ?Email, string ?FullName, string ?totalDiscount, string ?totalAmount, string status)
+        {
+            if (status == "CREATE")
+            {
+                HttpContext.Session.SetString("cart", string.Join(",", cart));
+                HttpContext.Session.SetString("quantity", string.Join(",", quantity));
+                HttpContext.Session.SetString("customerID", customerID);
+                HttpContext.Session.SetString("Email", Email);
+                HttpContext.Session.SetString("FullName", FullName);
+                HttpContext.Session.SetString("totalDiscount", totalDiscount);
+                HttpContext.Session.SetString("totalAmount", totalAmount);
+            }
+            else
+            {
+                HttpContext.Session.Remove("cart");
+                HttpContext.Session.Remove("quantity");
+                HttpContext.Session.Remove("customerID");
+                HttpContext.Session.Remove("Email");
+                HttpContext.Session.Remove("FullName");
+                HttpContext.Session.Remove("totalDiscount");
+                HttpContext.Session.Remove("totalAmount");
+            }
+
         }
     }
 }

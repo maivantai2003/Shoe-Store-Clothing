@@ -15,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 ConfigurationManager configuration=builder.Configuration;
-builder.Services.AddSignalR();  
+builder.Services.AddSignalR();
 builder.Services.AddDbContext<ApplicationDbContext>(option =>option.UseSqlServer(builder.Configuration.GetConnectionString("Default") ?? throw new Exception("Error")));
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection(nameof(CloudinarySettings)));
 builder.Services.AddIdentity<AppUser,IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
@@ -31,10 +31,10 @@ builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<IBlogRepository, BlogRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<RedisService>();
-builder.Services.AddStackExchangeRedisCache(option =>
-{
-    option.Configuration = configuration["RedisCacheUrl"];
-});
+//builder.Services.AddStackExchangeRedisCache(option =>
+//{
+//    option.Configuration = configuration["RedisCacheUrl"];
+//});
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
@@ -59,6 +59,13 @@ builder.Services.AddQuartz(q =>
 
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 //
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -73,6 +80,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseEndpoints(endpoints =>
